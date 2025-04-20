@@ -11,6 +11,10 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import org.testng.annotations.*;
 
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.List;
 
@@ -34,15 +38,24 @@ public class DiceJobApplicationTest {
 
     @BeforeMethod
     public void setup() {
-        ChromeOptions options = new ChromeOptions();
-        options.addArguments("--incognito");
+        try {
+            // Create a unique directory for user data
+            Path tempDir = Files.createTempDirectory("chrome_user_data");
 
-        driver = new ChromeDriver(options);
-        wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+            ChromeOptions options = new ChromeOptions();
+            options.addArguments("--incognito");
+            options.addArguments("--user-data-dir=" + tempDir.toString());
 
-        loginActions = new LoginActions(driver);
-        homeActions = new HomeActions(driver);
-        jobActions = new JobActions(driver);
+            driver = new ChromeDriver(options);
+            wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+
+            loginActions = new LoginActions(driver);
+            homeActions = new HomeActions(driver);
+            jobActions = new JobActions(driver);
+        } catch (Exception e) {
+            System.out.println("❌ Error setting up the WebDriver: " + e.getMessage());
+            Assert.fail("Error during WebDriver setup: " + e.getMessage());
+        }
     }
 
     @Test(timeOut = 20 * 60 * 1000, priority = 1) // 20 minutes
