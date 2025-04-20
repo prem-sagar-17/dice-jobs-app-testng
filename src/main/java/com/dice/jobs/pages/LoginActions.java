@@ -6,7 +6,6 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
-import java.util.List;
 
 public class LoginActions {
 
@@ -27,17 +26,22 @@ public class LoginActions {
 
         driver.get("https://www.dice.com/dashboard/login");
 
-        // Wait for page to load
+        // Wait for page to load and ensure email field is visible
         wait.until(ExpectedConditions.visibilityOfElementLocated(locators.emailField));
 
-        // ⛔ Attempt to remove cookie popup if present
+        // ⛔ Attempt to remove cookie consent popup if present
         try {
             WebElement cmpWrapper = driver.findElement(By.id("cmpwrapper"));
             if (cmpWrapper.isDisplayed()) {
                 System.out.println("⚠️ Cookie popup is blocking. Attempting to hide it via JS...");
+
+                // Hide the cookie consent popup via JavaScript
                 JavascriptExecutor js = (JavascriptExecutor) driver;
                 js.executeScript("document.getElementById('cmpwrapper').style.display='none';");
-                Thread.sleep(1000); // Give time for it to disappear
+
+                // Wait until the popup disappears before proceeding
+                wait.until(ExpectedConditions.invisibilityOf(cmpWrapper));
+
                 System.out.println("✅ Cookie popup hidden via JS.");
             }
         } catch (NoSuchElementException e) {
@@ -46,12 +50,14 @@ public class LoginActions {
             System.out.println("⚠️ Failed to hide cookie popup: " + e.getMessage());
         }
 
+        // Now proceed to enter the email and password
         driver.findElement(locators.emailInput).sendKeys(email);
         System.out.println("entered email");
 
         driver.findElement(locators.signInButton).click();
         System.out.println("clicked email");
 
+        // Wait for the password field to be visible
         wait.until(ExpectedConditions.visibilityOfElementLocated(locators.passwordField));
         driver.findElement(locators.passwordInput).sendKeys(password);
         System.out.println("entered password");
@@ -59,6 +65,7 @@ public class LoginActions {
         driver.findElement(locators.submitPasswordButton).click();
         System.out.println("clicked password button");
 
+        // Wait for the URL to change and indicate successful login
         wait.until(ExpectedConditions.urlToBe("https://www.dice.com/home-feed"));
         System.out.println("✅ Logged in successfully.");
     }
