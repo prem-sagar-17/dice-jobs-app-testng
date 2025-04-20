@@ -9,7 +9,7 @@ on:
       job_role:
         description: "Enter the job role to search"
         required: false
-        default: "java full stack developer"
+        default: "qa engineer"
       date_posted:
         description: "Select the job date posted"
         required: false
@@ -25,21 +25,25 @@ jobs:
   dice_job_application:
     timeout-minutes: 60
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Set up JDK 11
+      - name: Set up Java
         uses: actions/setup-java@v2
         with:
-          java-version: '11'
+          java-version: '17'
           distribution: 'temurin'
 
-      - name: Install dependencies
+      - name: Install Maven Dependencies
         run: mvn install
 
-      - name: Run TestNG tests
+      - name: Run TestNG Tests
         run: mvn test
+        env:
+          EMAIL: ${{ secrets.EMAIL }}
+          PASSWORD: ${{ secrets.PASSWORD }}
 
       - name: Upload TestNG Results
         uses: actions/upload-artifact@v4
