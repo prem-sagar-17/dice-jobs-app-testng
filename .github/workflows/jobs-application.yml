@@ -39,6 +39,9 @@ jobs:
       - name: Install Maven Dependencies
         run: mvn install
 
+      - name: Debug ENV
+        run: env
+
       - name: Run TestNG Tests
         run: mvn test
         env:
