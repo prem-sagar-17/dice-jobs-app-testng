@@ -42,8 +42,8 @@ jobs:
       - name: Run TestNG Tests
         run: mvn test
         env:
-          EMAIL: ${{ secrets.EMAIL }}
-          PASSWORD: ${{ secrets.PASSWORD }}
+          EMAIL: ${{ secrets.DICE_EMAIL }}
+          PASSWORD: ${{ secrets.DICE_PASSWORD }}
 
       - name: Upload TestNG Results
         uses: actions/upload-artifact@v4
