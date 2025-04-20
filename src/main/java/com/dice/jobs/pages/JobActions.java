@@ -30,8 +30,9 @@ public class JobActions {
         try {
             WebElement link = jobCard.findElement(By.xpath(".//h5//a"));
             String jobTitle = link.getText();
-            if (!jobTitle.matches("(?i).*\\b(qa|automation|tester|analyst|test|quality\\s?assurance)\\b.*")) {
-                System.out.println("⏭️ Skipping: Not a relevant job.");
+
+            if (!jobTitle.matches("(?i).*\\b(qa|automation|tester|analyst|test|quality\\s?assurance|quality\\s?engineer)\\b.*")) {
+                System.out.println("⏭️ Skipping:" + jobTitle + " application. Not a relevant job.");
                 return;
             }
 
@@ -46,24 +47,20 @@ public class JobActions {
             switchToNewWindow(parentWindow);
 
             if (isApplicationAlreadySubmitted(jobTitle)) {
-                driver.close();
-                driver.switchTo().window(parentWindow);
+                closeAndSwitchBack(parentWindow);
                 return;
             }
 
             if (!scrollToElement(locators.corpToCorp)) {
                 System.out.println("❌ Skipping: " + jobTitle + " (Corp to Corp not visible)");
                 saveJobResult(jobTitle, "❌", "❌", "✅", driver.getCurrentUrl());
-                driver.close();
-                driver.switchTo().window(parentWindow);
+                closeAndSwitchBack(parentWindow);
                 return;
             }
 
             System.out.println("✅ 'Accepts corp to corp applications' is visible. Proceeding with application...");
             performEasyApplyFlow(jobTitle);
-
-            driver.close();
-            driver.switchTo().window(parentWindow);
+            closeAndSwitchBack(parentWindow);
 
         } catch (Exception e) {
             System.out.println("❌ Error applying for job: " + e.getMessage());
@@ -84,6 +81,11 @@ public class JobActions {
         }
     }
 
+    private void closeAndSwitchBack(String parentWindow) {
+        driver.close();
+        driver.switchTo().window(parentWindow);
+    }
+
     private boolean isApplicationAlreadySubmitted(String jobTitle) {
         List<WebElement> elements = driver.findElements(locators.appSubmitted);
         if (!elements.isEmpty() && elements.get(0).isDisplayed()) {
@@ -95,57 +97,75 @@ public class JobActions {
     }
 
     private void performEasyApplyFlow(String jobTitle) {
+        if (!clickEasyApplyButtonIfPresent()) {
+            System.out.println("⏭️ Skipping: Easy Apply not available for " + jobTitle);
+            saveJobResult(jobTitle, "❌", "❌", "✅", driver.getCurrentUrl());
+            return;
+        }
+
         try {
-            clickEasyApplyButtonIfPresent();
             wait.until(ExpectedConditions.elementToBeClickable(locators.nextButton)).click();
             wait.until(ExpectedConditions.elementToBeClickable(locators.submitButton)).click();
 
-            try {
-                wait.until(ExpectedConditions.visibilityOfElementLocated(locators.applicationSubmittedHeading));
-                System.out.println("✅ Submit heading is visible after clicking submit.");
-            } catch (TimeoutException e) {
-                throw new AssertionError("❌ Submit heading not visible within 10 seconds after clicking submit.", e);
-            }
+            wait.until(ExpectedConditions.visibilityOfElementLocated(locators.applicationSubmittedHeading));
 
             System.out.println("✅ Successfully applied: " + jobTitle);
             saveJobResult(jobTitle, "❌", "✅", "❌", driver.getCurrentUrl());
 
         } catch (Exception e) {
-            System.out.println("❌ Easy Apply failed for: " + jobTitle + " - " + e.getMessage());
+            System.out.println("❌ Easy Apply failed during form submission for: " + jobTitle + " - " + e.getMessage());
             saveJobResult(jobTitle, "❌", "❌", "✅", driver.getCurrentUrl());
         }
     }
 
-    private void clickEasyApplyButtonIfPresent() {
+    private boolean clickEasyApplyButtonIfPresent() {
         try {
             JavascriptExecutor js = (JavascriptExecutor) driver;
-            js.executeScript("document.querySelector('apply-button-wc')?.scrollIntoView();");
+            js.executeScript("document.querySelector('apply-button-wc')?.scrollIntoView({ behavior: 'smooth', block: 'center' });");
+            Thread.sleep(2000);
 
-            WebElement easyApplyBtn = (WebElement) js.executeScript(
-                    "return document.querySelector('apply-button-wc')?.shadowRoot?.querySelector('button.btn.btn-primary');"
-            );
+            WebElement easyApplyBtn = null;
+            String buttonText;
 
-            System.out.println(easyApplyBtn);
+            for (int i = 0; i < 5; i++) {
+                easyApplyBtn = (WebElement) js.executeScript(
+                        "const host = document.querySelector('apply-button-wc');" +
+                                "if (host && host.shadowRoot) {" +
+                                "  const btn = host.shadowRoot.querySelector('button.btn.btn-primary');" +
+                                "  if (btn) return btn;" +
+                                "} return null;"
+                );
+
+                if (easyApplyBtn != null) {
+                    buttonText = (String) js.executeScript("return arguments[0].innerText;", easyApplyBtn);
+                    if (buttonText != null && buttonText.toLowerCase().contains("easy apply")) {
+                        break;
+                    } else {
+                        easyApplyBtn = null;
+                    }
+                }
+                Thread.sleep(1000);
+            }
 
             if (easyApplyBtn != null && easyApplyBtn.isDisplayed()) {
                 js.executeScript("arguments[0].click();", easyApplyBtn);
-                System.out.println("Easy apply button clicked.");
-                Thread.sleep(15000);
-            } else {
-                System.out.println("❌ Easy Apply button not visible or not found.");
+                System.out.println("✅ Easy Apply button clicked.");
+                return true;
             }
+
         } catch (Exception e) {
-            System.out.println("❌ Failed to click Easy apply button: " + e.getMessage());
+            System.out.println("❌ Failed to click Easy Apply button: " + e.getMessage());
         }
+        return false;
     }
 
     private void saveJobResult(String title, String alreadyApplied, String applied, String notApplied, String link) {
         HashMap<String, String> result = new HashMap<>();
-        result.put("title", title);
-        result.put("alreadyApplied", alreadyApplied);
-        result.put("applied", applied);
-        result.put("notApplied", notApplied);
-        result.put("link", link);
+        result.put("Title", title);
+        result.put("Already Applied", alreadyApplied);
+        result.put("Applied", applied);
+        result.put("Not Applied", notApplied);
+        result.put("Link", link);
         jobResults.add(result);
     }
 
@@ -199,13 +219,9 @@ public class JobActions {
             }
 
             File dir = new File("xslx-reports");
-            if (!dir.exists()) {
-                if (dir.mkdirs()) {
-                    System.out.println("✅ Directory 'xslx-reports' created successfully.");
-                } else {
-                    System.out.println("❌ Failed to create directory 'xslx-reports'. Export aborted.");
-                    return;
-                }
+            if (!dir.exists() && !dir.mkdirs()) {
+                System.out.println("❌ Failed to create directory 'xslx-reports'. Export aborted.");
+                return;
             }
 
             try (FileOutputStream fos = new FileOutputStream("xslx-reports/job_applications.xlsx")) {
