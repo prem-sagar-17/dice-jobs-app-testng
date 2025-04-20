@@ -23,7 +23,7 @@ public class HomeActions {
     public void searchJobs() {
         String jobRole = System.getenv("JOB_ROLE");
         if (jobRole == null || jobRole.isEmpty()) {
-            jobRole = "java full stack developer";
+            jobRole = "qa engineer";
         }
 
         wait.until(ExpectedConditions.visibilityOfElementLocated(locators.jobTitleField));

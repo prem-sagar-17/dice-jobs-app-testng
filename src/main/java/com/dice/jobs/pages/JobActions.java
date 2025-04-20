@@ -30,7 +30,7 @@ public class JobActions {
         try {
             WebElement link = jobCard.findElement(By.xpath(".//h5//a"));
             String jobTitle = link.getText();
-            if (!jobTitle.matches("(?i).*\\b(java|developer|full stack)\\b.*")) {
+            if (!jobTitle.matches("(?i).*\\b(qa|automation|tester|analyst|test|quality\\s?assurance)\\b.*")) {
                 System.out.println("⏭️ Skipping: Not a relevant job.");
                 return;
             }
