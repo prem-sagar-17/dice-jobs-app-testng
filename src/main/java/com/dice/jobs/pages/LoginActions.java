@@ -25,49 +25,60 @@ public class LoginActions {
         }
 
         driver.get("https://www.dice.com/dashboard/login");
-
-        // Wait for page to load
         wait.until(ExpectedConditions.visibilityOfElementLocated(locators.emailField));
 
-        // ⛔ Attempt to remove cookie popup if present
-        try {
-            WebElement cmpWrapper = driver.findElement(By.id("cmpwrapper"));
-            if (cmpWrapper.isDisplayed()) {
-                System.out.println("⚠️ Cookie popup is blocking. Attempting to hide it via JS...");
-                JavascriptExecutor js = (JavascriptExecutor) driver;
-                js.executeScript("document.getElementById('cmpwrapper').style.display='none';");
-                // Explicitly wait to ensure the overlay disappears
-                wait.until(ExpectedConditions.invisibilityOf(cmpWrapper));
-                System.out.println("✅ Cookie popup hidden via JS.");
-            }
-        } catch (NoSuchElementException e) {
-            System.out.println("✅ No cookie popup detected.");
-        } catch (Exception e) {
-            System.out.println("⚠️ Failed to hide cookie popup: " + e.getMessage());
-        }
+        dismissPopupIfPresent();
 
         driver.findElement(locators.emailInput).sendKeys(email);
         System.out.println("entered email");
 
-        // Attempt to click the sign-in button using JS if normal click doesn't work
+        dismissPopupIfPresent();
+
         try {
             WebElement signInButton = driver.findElement(locators.signInButton);
-            // Wait for the button to be clickable before clicking
-            wait.until(ExpectedConditions.elementToBeClickable(signInButton));
             ((JavascriptExecutor) driver).executeScript("arguments[0].click();", signInButton);
             System.out.println("✅ Clicked sign-in button via JS.");
         } catch (Exception e) {
-            System.out.println("⚠️ Failed to click sign-in button via JS: " + e.getMessage());
+            System.out.println("⚠️ Failed JS click on sign-in button: " + e.getMessage());
+            throw e;
         }
 
         wait.until(ExpectedConditions.visibilityOfElementLocated(locators.passwordField));
+
+        dismissPopupIfPresent();
+
         driver.findElement(locators.passwordInput).sendKeys(password);
         System.out.println("entered password");
 
-        driver.findElement(locators.submitPasswordButton).click();
-        System.out.println("clicked password button");
+        dismissPopupIfPresent();
+
+        try {
+            WebElement passwordButton = driver.findElement(locators.submitPasswordButton);
+            ((JavascriptExecutor) driver).executeScript("arguments[0].click();", passwordButton);
+            System.out.println("✅ Clicked password submit button via JS.");
+        } catch (Exception e) {
+            System.out.println("⚠️ Failed JS click on password button: " + e.getMessage());
+            throw e;
+        }
 
         wait.until(ExpectedConditions.urlToBe("https://www.dice.com/home-feed"));
         System.out.println("✅ Logged in successfully.");
+    }
+
+    private void dismissPopupIfPresent() {
+        try {
+            WebElement cmpWrapper = driver.findElement(By.id("cmpwrapper"));
+            if (cmpWrapper.isDisplayed()) {
+                System.out.println("⚠️ Cookie popup is visible. Attempting to hide...");
+                JavascriptExecutor js = (JavascriptExecutor) driver;
+                js.executeScript("document.getElementById('cmpwrapper').style.display='none';");
+                Thread.sleep(1000); // Wait for it to be removed
+                System.out.println("✅ Cookie popup hidden via JS.");
+            }
+        } catch (NoSuchElementException e) {
+            // Not present — silently ignore
+        } catch (Exception e) {
+            System.out.println("⚠️ Failed to dismiss popup: " + e.getMessage());
+        }
     }
 }
