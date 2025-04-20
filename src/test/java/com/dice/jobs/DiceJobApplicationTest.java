@@ -11,7 +11,6 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import org.testng.annotations.*;
 
-import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -39,15 +38,13 @@ public class DiceJobApplicationTest {
     @BeforeMethod
     public void setup() {
         try {
-            // Create a unique directory for user data
-            Path tempDir = Files.createTempDirectory("chrome_user_data");
-
+            // Set up ChromeDriver and headless options (if desired)
             ChromeOptions options = new ChromeOptions();
             options.addArguments("--incognito");
-            options.addArguments("--headless");  // Run in headless mode
-            options.addArguments("--user-data-dir=" + tempDir.toString()); // Set unique user data directory
+            options.addArguments("--headless");  // Run in headless mode (optional)
+            options.addArguments("--disable-gpu");  // Disable GPU for headless mode
 
-            driver = new ChromeDriver(options);
+            driver = new ChromeDriver(options);  // Use local ChromeDriver
             wait = new WebDriverWait(driver, Duration.ofSeconds(10));
 
             loginActions = new LoginActions(driver);
