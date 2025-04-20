@@ -35,7 +35,7 @@ public class DiceJobApplicationTest {
     @BeforeMethod
     public void setup() {
         ChromeOptions options = new ChromeOptions();
-        options.addArguments("--headed"); // Use "--headless" if needed
+        options.addArguments("--incognito");
 
         driver = new ChromeDriver(options);
         wait = new WebDriverWait(driver, Duration.ofSeconds(10));
@@ -64,7 +64,7 @@ public class DiceJobApplicationTest {
 //                for (int index = 0; index < jobCards.size(); index++) {
 //                    System.out.println("📌 Processing job at index " + index);
 //                    jobActions.applyForJob(jobCards.get(index));
-//                    jobCards = homeActions.GetJobCards(); // Refresh cards after DOM change
+//                    jobCards = homeActions.GetJobCards();
 //                }
 
                 if (homeActions.GetPageNextButtonVisibility()) {
@@ -74,7 +74,7 @@ public class DiceJobApplicationTest {
                     System.out.println("🔄 Moving to the next page...");
                     WebElement nextButton = homeActions.GetPageNextButtonLocator();
                     nextButton.click();
-                    wait.until(ExpectedConditions.stalenessOf(nextButton)); // Wait for page change
+                    wait.until(ExpectedConditions.stalenessOf(nextButton));
                 }
             }
 
