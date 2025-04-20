@@ -26,22 +26,18 @@ public class LoginActions {
 
         driver.get("https://www.dice.com/dashboard/login");
 
-        // Wait for page to load and ensure email field is visible
+        // Wait for page to load
         wait.until(ExpectedConditions.visibilityOfElementLocated(locators.emailField));
 
-        // ⛔ Attempt to remove cookie consent popup if present
+        // ⛔ Attempt to remove cookie popup if present
         try {
             WebElement cmpWrapper = driver.findElement(By.id("cmpwrapper"));
             if (cmpWrapper.isDisplayed()) {
                 System.out.println("⚠️ Cookie popup is blocking. Attempting to hide it via JS...");
-
-                // Hide the cookie consent popup via JavaScript
                 JavascriptExecutor js = (JavascriptExecutor) driver;
                 js.executeScript("document.getElementById('cmpwrapper').style.display='none';");
-
-                // Wait until the popup disappears before proceeding
+                // Wait to ensure the overlay is removed
                 wait.until(ExpectedConditions.invisibilityOf(cmpWrapper));
-
                 System.out.println("✅ Cookie popup hidden via JS.");
             }
         } catch (NoSuchElementException e) {
@@ -50,14 +46,18 @@ public class LoginActions {
             System.out.println("⚠️ Failed to hide cookie popup: " + e.getMessage());
         }
 
-        // Now proceed to enter the email and password
         driver.findElement(locators.emailInput).sendKeys(email);
         System.out.println("entered email");
 
-        driver.findElement(locators.signInButton).click();
-        System.out.println("clicked email");
+        // Click the sign-in button using JS if normal click doesn't work
+        try {
+            WebElement signInButton = driver.findElement(locators.signInButton);
+            ((JavascriptExecutor) driver).executeScript("arguments[0].click();", signInButton);
+            System.out.println("✅ Clicked sign-in button via JS.");
+        } catch (Exception e) {
+            System.out.println("⚠️ Failed to click sign-in button via JS: " + e.getMessage());
+        }
 
-        // Wait for the password field to be visible
         wait.until(ExpectedConditions.visibilityOfElementLocated(locators.passwordField));
         driver.findElement(locators.passwordInput).sendKeys(password);
         System.out.println("entered password");
@@ -65,7 +65,6 @@ public class LoginActions {
         driver.findElement(locators.submitPasswordButton).click();
         System.out.println("clicked password button");
 
-        // Wait for the URL to change and indicate successful login
         wait.until(ExpectedConditions.urlToBe("https://www.dice.com/home-feed"));
         System.out.println("✅ Logged in successfully.");
     }
