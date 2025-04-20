@@ -44,7 +44,8 @@ public class DiceJobApplicationTest {
 
             ChromeOptions options = new ChromeOptions();
             options.addArguments("--incognito");
-            options.addArguments("--user-data-dir=" + tempDir.toString());
+            options.addArguments("--headless");  // Run in headless mode
+            options.addArguments("--user-data-dir=" + tempDir.toString()); // Set unique user data directory
 
             driver = new ChromeDriver(options);
             wait = new WebDriverWait(driver, Duration.ofSeconds(10));
@@ -72,13 +73,13 @@ public class DiceJobApplicationTest {
             while (true) {
                 System.out.println("🔄 Processing job listings on page - " + pageNumber++);
 
-//                List<WebElement> jobCards = homeActions.GetJobCards();
-//
-//                for (int index = 0; index < jobCards.size(); index++) {
-//                    System.out.println("📌 Processing job at index " + index);
-//                    jobActions.applyForJob(jobCards.get(index));
-//                    jobCards = homeActions.GetJobCards();
-//                }
+                List<WebElement> jobCards = homeActions.GetJobCards();
+
+                for (int index = 0; index < jobCards.size(); index++) {
+                    System.out.println("📌 Processing job at index " + index);
+                    jobActions.applyForJob(jobCards.get(index));
+                    jobCards = homeActions.GetJobCards();
+                }
 
                 if (homeActions.GetPageNextButtonVisibility()) {
                     System.out.println("✅ No more pages to process.");
