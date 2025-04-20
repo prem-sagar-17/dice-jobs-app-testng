@@ -41,6 +41,7 @@ public class DiceJobApplicationTest {
             // Set up ChromeDriver and headless options (if desired)
             ChromeOptions options = new ChromeOptions();
             options.addArguments("--incognito");
+            options.addArguments("--start-maximized"); // Maximize browser
             options.addArguments("--headless");  // Run in headless mode (optional)
             options.addArguments("--disable-gpu");  // Disable GPU for headless mode
 
