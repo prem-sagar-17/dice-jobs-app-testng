@@ -11,9 +11,6 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import org.testng.annotations.*;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.List;
 
@@ -24,6 +21,7 @@ public class DiceJobApplicationTest {
     private LoginActions loginActions;
     private HomeActions homeActions;
     private JobActions jobActions;
+
     private static final String EMAIL = System.getenv("EMAIL");
     private static final String PASSWORD = System.getenv("PASSWORD");
 
@@ -38,14 +36,13 @@ public class DiceJobApplicationTest {
     @BeforeMethod
     public void setup() {
         try {
-            // Set up ChromeDriver and headless options (if desired)
             ChromeOptions options = new ChromeOptions();
             options.addArguments("--incognito");
-            options.addArguments("--start-maximized"); // Maximize browser
-            options.addArguments("--headless");  // Run in headless mode (optional)
-            options.addArguments("--disable-gpu");  // Disable GPU for headless mode
+            options.addArguments("--start-maximized");
+            options.addArguments("--headless");
+            options.addArguments("--disable-gpu");
 
-            driver = new ChromeDriver(options);  // Use local ChromeDriver
+            driver = new ChromeDriver(options);
             wait = new WebDriverWait(driver, Duration.ofSeconds(10));
 
             loginActions = new LoginActions(driver);
@@ -57,14 +54,12 @@ public class DiceJobApplicationTest {
         }
     }
 
-    @Test(timeOut = 20 * 60 * 1000, priority = 1) // 20 minutes
+    @Test(timeOut = 20 * 60 * 1000, priority = 1)
     public void testJobApplicationAutomation() {
         try {
-            // 🔐 Step 1: Login
             System.out.println("🔑 Logging in...");
             loginActions.login(EMAIL, PASSWORD);
 
-            // 🔍 Step 2: Search Jobs
             homeActions.searchJobs();
             int pageNumber = 1;
 

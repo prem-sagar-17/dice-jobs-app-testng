@@ -30,50 +30,40 @@ public class LoginActions {
         dismissPopupIfPresent();
 
         driver.findElement(locators.emailInput).sendKeys(email);
-        System.out.println("entered email");
-
         dismissPopupIfPresent();
 
         try {
             WebElement signInButton = driver.findElement(locators.signInButton);
             ((JavascriptExecutor) driver).executeScript("arguments[0].click();", signInButton);
-            System.out.println("✅ Clicked sign-in button via JS.");
         } catch (Exception e) {
             System.out.println("⚠️ Failed JS click on sign-in button: " + e.getMessage());
             throw e;
         }
 
         wait.until(ExpectedConditions.visibilityOfElementLocated(locators.passwordField));
-
         dismissPopupIfPresent();
 
         driver.findElement(locators.passwordInput).sendKeys(password);
-        System.out.println("entered password");
-
         dismissPopupIfPresent();
 
         try {
             WebElement passwordButton = driver.findElement(locators.submitPasswordButton);
             ((JavascriptExecutor) driver).executeScript("arguments[0].click();", passwordButton);
-            System.out.println("✅ Clicked password submit button via JS.");
         } catch (Exception e) {
             System.out.println("⚠️ Failed JS click on password button: " + e.getMessage());
             throw e;
         }
 
         wait.until(ExpectedConditions.urlToBe("https://www.dice.com/home-feed"));
-        System.out.println("✅ Logged in successfully.");
     }
 
     private void dismissPopupIfPresent() {
         try {
             WebElement cmpWrapper = driver.findElement(By.id("cmpwrapper"));
             if (cmpWrapper.isDisplayed()) {
-                System.out.println("⚠️ Cookie popup is visible. Attempting to hide...");
                 JavascriptExecutor js = (JavascriptExecutor) driver;
                 js.executeScript("document.getElementById('cmpwrapper').style.display='none';");
-                Thread.sleep(1000); // Wait for it to be removed
-                System.out.println("✅ Cookie popup hidden via JS.");
+                Thread.sleep(1000);
             }
         } catch (NoSuchElementException e) {
             // Not present — silently ignore
