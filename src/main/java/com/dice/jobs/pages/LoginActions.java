@@ -36,7 +36,7 @@ public class LoginActions {
                 System.out.println("⚠️ Cookie popup is blocking. Attempting to hide it via JS...");
                 JavascriptExecutor js = (JavascriptExecutor) driver;
                 js.executeScript("document.getElementById('cmpwrapper').style.display='none';");
-                // Wait to ensure the overlay is removed
+                // Explicitly wait to ensure the overlay disappears
                 wait.until(ExpectedConditions.invisibilityOf(cmpWrapper));
                 System.out.println("✅ Cookie popup hidden via JS.");
             }
@@ -49,9 +49,11 @@ public class LoginActions {
         driver.findElement(locators.emailInput).sendKeys(email);
         System.out.println("entered email");
 
-        // Click the sign-in button using JS if normal click doesn't work
+        // Attempt to click the sign-in button using JS if normal click doesn't work
         try {
             WebElement signInButton = driver.findElement(locators.signInButton);
+            // Wait for the button to be clickable before clicking
+            wait.until(ExpectedConditions.elementToBeClickable(signInButton));
             ((JavascriptExecutor) driver).executeScript("arguments[0].click();", signInButton);
             System.out.println("✅ Clicked sign-in button via JS.");
         } catch (Exception e) {
