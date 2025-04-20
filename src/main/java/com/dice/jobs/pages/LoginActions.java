@@ -27,11 +27,18 @@ public class LoginActions {
 
         wait.until(ExpectedConditions.visibilityOfElementLocated(locators.emailField));
         driver.findElement(locators.emailInput).sendKeys(email);
+        System.out.println("entered email");
         driver.findElement(locators.signInButton).click();
+        System.out.println("clicked email");
+
 
         wait.until(ExpectedConditions.visibilityOfElementLocated(locators.passwordField));
         driver.findElement(locators.passwordInput).sendKeys(password);
+        System.out.println("entered password");
+
         driver.findElement(locators.submitPasswordButton).click();
+        System.out.println("clciked email");
+
 
         wait.until(ExpectedConditions.urlToBe("https://www.dice.com/home-feed"));
 
