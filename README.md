@@ -12,7 +12,7 @@ This project automates the process of applying to relevant jobs on Dice.com usin
 
 ### 🚀 Features
 - Daily automated job application execution
-- Filters job titles (e.g., Java, Developer, Full Stack)
+- Filters job titles (e.g., QA Engineer, Quality Assurance Engineer)
 - Skips jobs already applied
 - Applies to jobs with "Easy Apply" support
 - Generates an Excel report of application results
