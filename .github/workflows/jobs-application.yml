@@ -1,0 +1,43 @@
+name: Apply for DICE jobs daily
+
+on:
+  schedule:
+    - cron: "0 12 * * *"  # Runs at 12 PM UTC, which is 6 AM CST
+  push:
+    branches:
+      - main  # Runs on pushes to the main branch (optional)
+  pull_request:
+    branches:
+      - main  # Runs on PRs to the main branch (optional)
+
+jobs:
+  test:
+    runs-on: ubuntu-latest  # Use the latest Ubuntu runner
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up JDK
+        uses: actions/setup-java@v2
+        with:
+          java-version: '11'  # Use the version of Java you need (e.g., '11', '8', etc.)
+          distribution: 'adoptopenjdk'
+
+      - name: Install dependencies
+        run: |
+          # If you're using Maven, you can install dependencies here
+          # e.g., mvn clean install
+          # If you're using Gradle, you can use gradle build
+          mvn install
+
+      - name: Run TestNG tests
+        run: mvn test  # This will run the TestNG tests if you're using Maven
+        # If you're using Gradle, replace the above command with: gradle test
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v2
+        with:
+          name: testng-results
+          path: target/test-*.xml  # Adjust the path to match where your TestNG results are stored
