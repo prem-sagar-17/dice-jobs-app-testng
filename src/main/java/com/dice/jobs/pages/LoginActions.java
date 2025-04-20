@@ -27,22 +27,25 @@ public class LoginActions {
 
         driver.get("https://www.dice.com/dashboard/login");
 
-        // ⛔ Handle cookie/consent popup
+        // Wait for page to load
+        wait.until(ExpectedConditions.visibilityOfElementLocated(locators.emailField));
+
+        // ⛔ Attempt to remove cookie popup if present
         try {
-            List<WebElement> cmpWrappers = driver.findElements(By.id("cmpwrapper"));
-            if (!cmpWrappers.isEmpty() && cmpWrappers.get(0).isDisplayed()) {
-                System.out.println("⚠️ Cookie popup detected, trying to close...");
-                WebElement closeButton = cmpWrappers.get(0).findElement(By.cssSelector("button"));
-                closeButton.click();
-                wait.until(ExpectedConditions.invisibilityOfElementLocated(By.id("cmpwrapper")));
-                System.out.println("✅ Cookie popup closed.");
+            WebElement cmpWrapper = driver.findElement(By.id("cmpwrapper"));
+            if (cmpWrapper.isDisplayed()) {
+                System.out.println("⚠️ Cookie popup is blocking. Attempting to hide it via JS...");
+                JavascriptExecutor js = (JavascriptExecutor) driver;
+                js.executeScript("document.getElementById('cmpwrapper').style.display='none';");
+                Thread.sleep(1000); // Give time for it to disappear
+                System.out.println("✅ Cookie popup hidden via JS.");
             }
+        } catch (NoSuchElementException e) {
+            System.out.println("✅ No cookie popup detected.");
         } catch (Exception e) {
-            System.out.println("⚠️ Could not close cookie popup: " + e.getMessage());
+            System.out.println("⚠️ Failed to hide cookie popup: " + e.getMessage());
         }
 
-        // Continue with login
-        wait.until(ExpectedConditions.visibilityOfElementLocated(locators.emailField));
         driver.findElement(locators.emailInput).sendKeys(email);
         System.out.println("entered email");
 
