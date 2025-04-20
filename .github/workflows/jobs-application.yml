@@ -37,10 +37,7 @@ jobs:
           distribution: 'temurin'
 
       - name: Install Maven Dependencies
-        run: mvn install
-
-      - name: Debug ENV
-        run: env
+        run: mvn install -DskipTests
 
       - name: Run TestNG Tests
         run: mvn test
