@@ -50,9 +50,19 @@ public class HomeActions {
         System.out.println("🔎 Job search filters applied. " + postedToday.getText() + " for " + jobRole);
     }
 
-    public List<WebElement> GetPageNumber() {
+    public int GetPageNumberCount() {
         wait.until(ExpectedConditions.visibilityOfElementLocated(locators.paginationItems));
-        return driver.findElements(locators.paginationItems);
+        List<WebElement> pages = driver.findElements(locators.paginationItems);
+        int count = 0;
+
+        for (WebElement page : pages) {
+            String text = page.getText().trim();
+            if (text.matches("\\d+")) {
+                count++;
+            }
+        }
+
+        return count;
     }
 
     public List<WebElement> GetJobCards() {

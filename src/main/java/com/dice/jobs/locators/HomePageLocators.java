@@ -18,7 +18,7 @@ public class HomePageLocators {
     public By postedTodayRadio = By.xpath("//button[normalize-space()='Today']");
     public By filterSearchCheckbox = By.xpath("//button[@aria-label='Filter Search Results by Third Party']");
     public By jobCards = By.xpath("//div[@class='card search-card']");
-    public By paginationItems = By.xpath("//ul[@class='pagination']/li");
+    public By paginationItems = By.xpath("//ul[@class='pagination']/li[contains(@class, 'pagination-page')]");
     public By pageNext = By.xpath("//li[@class='pagination-next page-item ng-star-inserted disabled']");
     public By pageNextButton = By.xpath("//a[normalize-space()='»']");
 }
