@@ -71,8 +71,15 @@ public class HomeActions {
     }
 
     public WebElement GetPageNextButtonLocator() {
-        wait.until(ExpectedConditions.presenceOfElementLocated(locators.pageNextButton));
-        return driver.findElement(locators.pageNextButton);
+        try {
+            ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", driver.findElement(locators.pageNextButton));
+            wait.until(ExpectedConditions.visibilityOfElementLocated(locators.pageNextButton));
+            wait.until(ExpectedConditions.stalenessOf(driver.findElement(locators.pageNextButton)));
+            return driver.findElement(locators.pageNextButton);
+        } catch (Exception e) {
+            System.out.println("❌ Error encountered: " + e.getMessage());
+            return null;
+        }
     }
 
     public boolean GetPageNextDisabledButtonVisibility() {
