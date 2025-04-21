@@ -72,10 +72,12 @@ public class HomeActions {
 
     public WebElement GetPageNextButtonLocator() {
         try {
-            ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", driver.findElement(locators.pageNextButton));
-            wait.until(ExpectedConditions.visibilityOfElementLocated(locators.pageNextButton));
-            wait.until(ExpectedConditions.stalenessOf(driver.findElement(locators.pageNextButton)));
-            return driver.findElement(locators.pageNextButton);
+            WebElement nextButton = driver.findElement(locators.pageNextButton);
+            wait.until(ExpectedConditions.visibilityOf(nextButton));
+            ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", nextButton);
+            wait.until(ExpectedConditions.elementToBeClickable(nextButton));
+            wait.until(ExpectedConditions.stalenessOf(nextButton));
+            return nextButton;
         } catch (Exception e) {
             System.out.println("❌ Error encountered: " + e.getMessage());
             return null;
