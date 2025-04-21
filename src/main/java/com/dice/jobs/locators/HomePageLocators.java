@@ -20,5 +20,5 @@ public class HomePageLocators {
     public By jobCards = By.xpath("//div[@class='card search-card']");
     public By paginationItems = By.xpath("//ul[@class='pagination']/li[contains(@class, 'pagination-page')]");
     public By pageNextDisabled = By.xpath("//li[@class='pagination-next page-item ng-star-inserted disabled']");
-    public By pageNextButton = By.xpath("//li[@class='pagination-next']/a[normalize-space()='»']");
+    public By pageNextButton = By.xpath("//li[contains(@class, 'pagination-next')]//a[normalize-space(text())='»']");
 }

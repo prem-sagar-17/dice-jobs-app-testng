@@ -74,9 +74,8 @@ public class HomeActions {
         try {
             WebElement nextButton = driver.findElement(locators.pageNextButton);
             wait.until(ExpectedConditions.visibilityOf(nextButton));
-            ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", nextButton);
             wait.until(ExpectedConditions.elementToBeClickable(nextButton));
-            wait.until(ExpectedConditions.stalenessOf(nextButton));
+            ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", nextButton);
             return nextButton;
         } catch (Exception e) {
             System.out.println("❌ Error encountered: " + e.getMessage());
