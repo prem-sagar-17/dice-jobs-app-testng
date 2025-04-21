@@ -79,7 +79,7 @@ public class DiceJobApplicationTest {
                     jobCards = homeActions.GetJobCards();
                 }
 
-                if (!homeActions.GetPageNextButtonVisibility()) {
+                if (homeActions.GetPageNextDisabledButtonVisibility()) {
                     System.out.println("✅ No more pages to process.");
                     break;
                 } else {

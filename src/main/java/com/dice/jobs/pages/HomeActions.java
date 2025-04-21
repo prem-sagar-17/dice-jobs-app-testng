@@ -75,9 +75,9 @@ public class HomeActions {
         return driver.findElement(locators.pageNextButton);
     }
 
-    public boolean GetPageNextButtonVisibility() {
+    public boolean GetPageNextDisabledButtonVisibility() {
         try {
-            wait.until(ExpectedConditions.visibilityOfElementLocated(locators.pageNext));
+            wait.until(ExpectedConditions.visibilityOfElementLocated(locators.pageNextDisabled));
             return true;
         } catch (TimeoutException e) {
             return false;
