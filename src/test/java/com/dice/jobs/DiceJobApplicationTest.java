@@ -57,9 +57,8 @@ public class DiceJobApplicationTest {
     @Test(timeOut = 20 * 60 * 1000, priority = 1)
     public void testJobApplicationAutomation() {
         try {
-            System.out.println("🔑 Logging in with email: " + EMAIL + "...");
             loginActions.login(EMAIL, PASSWORD);
-            System.out.println("✅🎉 Successfully logged in as 👤 " + EMAIL + "\n");
+            System.out.println("✅🎉 Successfully logged in");
 
             homeActions.searchJobs();
             int pageNumber = 1;
