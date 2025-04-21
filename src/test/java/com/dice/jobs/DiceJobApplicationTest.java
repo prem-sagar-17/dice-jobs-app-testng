@@ -70,17 +70,23 @@ public class DiceJobApplicationTest {
 
                 for (int index = 0; index < jobCards.size(); index++) {
                     System.out.println("📌 Processing job at index " + index);
+
+                    // Apply for the job
                     jobActions.applyForJob(jobCards.get(index));
+
+                    // Re-fetch the job cards after applying for one to avoid stale element issues
                     jobCards = homeActions.GetJobCards();
                 }
 
-                if (homeActions.GetPageNextButtonVisibility()) {
+                if (!homeActions.GetPageNextButtonVisibility()) {
                     System.out.println("✅ No more pages to process.");
                     break;
                 } else {
                     System.out.println("🔄 Moving to the next page...");
                     WebElement nextButton = homeActions.GetPageNextButtonLocator();
                     nextButton.click();
+
+                    // Wait for the page to load completely and ensure the next button is no longer clickable
                     wait.until(ExpectedConditions.stalenessOf(nextButton));
                 }
             }
