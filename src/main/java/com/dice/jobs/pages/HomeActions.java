@@ -4,6 +4,11 @@ import com.dice.jobs.locators.HomePageLocators;
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.interactions.Actions;
+
 
 import java.time.Duration;
 import java.util.List;
@@ -72,10 +77,18 @@ public class HomeActions {
 
     public WebElement GetPageNextButtonLocator() {
         try {
-            WebElement nextButton = driver.findElement(locators.pageNextButton);
+            WebElement nextButton = driver.findElement(By.xpath("//li[contains(@class, 'pagination-next')]//a[normalize-space(text())='»']"));
             wait.until(ExpectedConditions.visibilityOf(nextButton));
             wait.until(ExpectedConditions.elementToBeClickable(nextButton));
             ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", nextButton);
+
+            WebElement geoLocateButton = driver.findElement(By.id("IPGeoLocateButton"));
+            wait.until(ExpectedConditions.invisibilityOf(geoLocateButton));
+
+            // Click via Actions class
+            Actions actions = new Actions(driver);
+            actions.moveToElement(nextButton).click().perform();
+
             return nextButton;
         } catch (Exception e) {
             System.out.println("❌ Error encountered: " + e.getMessage());
