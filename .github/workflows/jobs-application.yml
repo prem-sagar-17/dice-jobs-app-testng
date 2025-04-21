@@ -45,14 +45,6 @@ jobs:
           EMAIL: ${{ secrets.DICE_EMAIL }}
           PASSWORD: ${{ secrets.DICE_PASSWORD }}
 
-      - name: Upload TestNG Results
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: testng-results
-          path: target/test-*.xml
-          retention-days: 7
-
       - name: Upload Job Applications Report
         uses: actions/upload-artifact@v4
         if: always()
