@@ -161,11 +161,11 @@ public class JobActions {
 
     private void saveJobResult(String title, String alreadyApplied, String applied, String notApplied, String link) {
         HashMap<String, String> result = new HashMap<>();
-        result.put("Title", title);
-        result.put("Already Applied", alreadyApplied);
-        result.put("Applied", applied);
-        result.put("Not Applied", notApplied);
-        result.put("Link", link);
+        result.put("title", title);
+        result.put("alreadyApplied", alreadyApplied);
+        result.put("applied", applied);
+        result.put("notApplied", notApplied);
+        result.put("link", link);
         jobResults.add(result);
     }
 
@@ -190,15 +190,21 @@ public class JobActions {
 
         System.out.println("📤 Exporting job results to Excel...");
 
-        int totalApplied = (int) jobResults.stream().filter(job -> job.get("applied").equals("✅")).count();
-        int totalNotApplied = (int) jobResults.stream().filter(job -> job.get("notApplied").equals("✅")).count();
-        int totalAlreadyApplied = (int) jobResults.stream().filter(job -> job.get("alreadyApplied").equals("✅")).count();
+        int totalApplied = (int) jobResults.stream()
+                .filter(job -> "✅".equals(job.get("applied")))
+                .count();
+        int totalNotApplied = (int) jobResults.stream()
+                .filter(job -> "✅".equals(job.get("notApplied")))
+                .count();
+        int totalAlreadyApplied = (int) jobResults.stream()
+                .filter(job -> "✅".equals(job.get("alreadyApplied")))
+                .count();
 
         HashMap<String, String> summary = new HashMap<>();
         summary.put("title", "Total");
+        summary.put("alreadyApplied", String.valueOf(totalAlreadyApplied));
         summary.put("applied", String.valueOf(totalApplied));
         summary.put("notApplied", String.valueOf(totalNotApplied));
-        summary.put("alreadyApplied", String.valueOf(totalAlreadyApplied));
         summary.put("link", "");
         jobResults.add(summary);
 
