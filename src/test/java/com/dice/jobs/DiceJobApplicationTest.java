@@ -63,8 +63,8 @@ public class DiceJobApplicationTest {
             homeActions.searchJobs();
             int pageNumber = 1;
 
+            System.out.println("Total Pages - " + homeActions.GetPageNumberCount());
             while (true) {
-                System.out.println("Total Pages - " + homeActions.GetPageNumberCount());
                 System.out.println("🔄 Processing job listings on page - " + pageNumber++);
 
                 List<WebElement> jobCards = homeActions.GetJobCards();
