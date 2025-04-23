@@ -4,8 +4,6 @@ import com.dice.jobs.pages.JobActions;
 import com.dice.jobs.pages.LoginActions;
 import com.dice.jobs.pages.HomeActions;
 import org.openqa.selenium.*;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
@@ -14,9 +12,8 @@ import org.testng.annotations.*;
 import java.time.Duration;
 import java.util.List;
 
-public class DiceJobApplicationTest {
+public class DiceJobApplicationTest extends BrowserstackTest {
 
-    private WebDriver driver;
     private WebDriverWait wait;
     private LoginActions loginActions;
     private HomeActions homeActions;
@@ -34,24 +31,11 @@ public class DiceJobApplicationTest {
     }
 
     @BeforeMethod
-    public void setup() {
-        try {
-            ChromeOptions options = new ChromeOptions();
-            options.addArguments("--incognito");
-            options.addArguments("--start-maximized");
-            options.addArguments("--headless");
-            options.addArguments("--disable-gpu");
-
-            driver = new ChromeDriver(options);
-            wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-
-            loginActions = new LoginActions(driver);
-            homeActions = new HomeActions(driver);
-            jobActions = new JobActions(driver);
-        } catch (Exception e) {
-            System.out.println("❌ Error setting up the WebDriver: " + e.getMessage());
-            Assert.fail("Error during WebDriver setup: " + e.getMessage());
-        }
+    public void initPageObjects() {
+        wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        loginActions = new LoginActions(driver);
+        homeActions = new HomeActions(driver);
+        jobActions = new JobActions(driver);
     }
 
     @Test(timeOut = 20 * 60 * 1000, priority = 1)
@@ -63,7 +47,7 @@ public class DiceJobApplicationTest {
             homeActions.searchJobs();
             int pageNumber = 1;
 
-            System.out.println("📄 Total pages found: "  + homeActions.GetPageNumberCount());
+            System.out.println("📄 Total pages found: " + homeActions.GetPageNumberCount());
             while (true) {
                 System.out.println("🔄 Processing job listings on page - " + pageNumber++);
 
@@ -72,10 +56,9 @@ public class DiceJobApplicationTest {
                 for (int index = 0; index < jobCards.size(); index++) {
                     System.out.println("📌 Processing job at index " + index);
 
-                    // Apply for the job
                     jobActions.applyForJob(jobCards.get(index));
 
-                    // Re-fetch the job cards after applying for one to avoid stale element issues
+                    // Re-fetch the job cards to avoid stale elements
                     jobCards = homeActions.GetJobCards();
                 }
 
@@ -86,8 +69,6 @@ public class DiceJobApplicationTest {
                     System.out.println("🔄 Moving to the next page...");
                     WebElement nextButton = homeActions.GetPageNextButtonLocator();
                     nextButton.click();
-
-                    // Wait for the page to load completely and ensure the next button is no longer clickable
                     wait.until(ExpectedConditions.stalenessOf(nextButton));
                 }
             }
@@ -98,13 +79,6 @@ public class DiceJobApplicationTest {
         } finally {
             System.out.println("📊 Exporting job applications before exit...");
             jobActions.exportToExcel();
-        }
-    }
-
-    @AfterMethod
-    public void tearDown() {
-        if (driver != null) {
-            driver.quit();
         }
     }
 }
