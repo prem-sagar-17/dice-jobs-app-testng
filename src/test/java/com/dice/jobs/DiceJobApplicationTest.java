@@ -12,8 +12,9 @@ import org.testng.annotations.*;
 import java.time.Duration;
 import java.util.List;
 
-public class DiceJobApplicationTest extends BrowserstackTest {
+public class DiceJobApplicationTest {
 
+    private WebDriver driver;
     private WebDriverWait wait;
     private LoginActions loginActions;
     private HomeActions homeActions;
@@ -31,11 +32,26 @@ public class DiceJobApplicationTest extends BrowserstackTest {
     }
 
     @BeforeMethod
-    public void initPageObjects() {
-        wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-        loginActions = new LoginActions(driver);
-        homeActions = new HomeActions(driver);
-        jobActions = new JobActions(driver);
+    public void setup() {
+        try {
+            // Get remote WebDriver from BrowserStack
+            driver = BrowserStackFactory.getDriver(
+                    "Windows",            // OS
+                    "11",                 // OS Version
+                    "Chrome",             // Browser
+                    "latest",             // Browser Version
+                    "Dice Job App Test"   // Test name
+            );
+
+            wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+
+            loginActions = new LoginActions(driver);
+            homeActions = new HomeActions(driver);
+            jobActions = new JobActions(driver);
+        } catch (Exception e) {
+            System.out.println("❌ Error setting up the WebDriver: " + e.getMessage());
+            Assert.fail("Error during WebDriver setup: " + e.getMessage());
+        }
     }
 
     @Test(timeOut = 20 * 60 * 1000, priority = 1)
@@ -55,11 +71,8 @@ public class DiceJobApplicationTest extends BrowserstackTest {
 
                 for (int index = 0; index < jobCards.size(); index++) {
                     System.out.println("📌 Processing job at index " + index);
-
                     jobActions.applyForJob(jobCards.get(index));
-
-                    // Re-fetch the job cards to avoid stale elements
-                    jobCards = homeActions.GetJobCards();
+                    jobCards = homeActions.GetJobCards(); // Re-fetch
                 }
 
                 if (homeActions.GetPageNextDisabledButtonVisibility()) {
@@ -79,6 +92,13 @@ public class DiceJobApplicationTest extends BrowserstackTest {
         } finally {
             System.out.println("📊 Exporting job applications before exit...");
             jobActions.exportToExcel();
+        }
+    }
+
+    @AfterMethod
+    public void tearDown() {
+        if (driver != null) {
+            driver.quit();
         }
     }
 }
