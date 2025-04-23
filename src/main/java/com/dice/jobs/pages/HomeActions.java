@@ -77,17 +77,16 @@ public class HomeActions {
 
     public WebElement GetPageNextButtonLocator() {
         try {
-            WebElement nextButton = driver.findElement(By.cssSelector("li[class='pagination-next page-item ng-star-inserted'] a[class='page-link']"));
-            wait.until(ExpectedConditions.visibilityOf(nextButton));
-            wait.until(ExpectedConditions.elementToBeClickable(nextButton));
+            By nextButtonXPath = By.xpath("//li[contains(@class, 'pagination-next')]//a[normalize-space(text())='»']");
+            WebElement nextButton = wait.until(ExpectedConditions.presenceOfElementLocated(nextButtonXPath));
             ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", nextButton);
+            wait.until(ExpectedConditions.elementToBeClickable(nextButton));
 
-            WebElement geoLocateButton = driver.findElement(By.id("IPGeoLocateButton"));
-            wait.until(ExpectedConditions.invisibilityOf(geoLocateButton));
-
-            // Click via Actions class
-            Actions actions = new Actions(driver);
-            actions.moveToElement(nextButton).click().perform();
+            try {
+                nextButton.click(); // try normal click
+            } catch (ElementClickInterceptedException e) {
+                ((JavascriptExecutor) driver).executeScript("arguments[0].click();", nextButton); // fallback
+            }
 
             return nextButton;
         } catch (Exception e) {
