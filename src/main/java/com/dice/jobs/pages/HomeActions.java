@@ -77,7 +77,7 @@ public class HomeActions {
 
     public WebElement GetPageNextButtonLocator() {
         try {
-            WebElement nextButton = driver.findElement(By.xpath("//li[contains(@class, 'pagination-next')]//a[normalize-space(text())='»']"));
+            WebElement nextButton = driver.findElement(By.cssSelector("li[class='pagination-next page-item ng-star-inserted'] a[class='page-link']"));
             wait.until(ExpectedConditions.visibilityOf(nextButton));
             wait.until(ExpectedConditions.elementToBeClickable(nextButton));
             ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", nextButton);
