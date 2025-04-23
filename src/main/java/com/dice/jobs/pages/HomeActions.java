@@ -82,11 +82,8 @@ public class HomeActions {
             ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", nextButton);
             wait.until(ExpectedConditions.elementToBeClickable(nextButton));
 
-            try {
-                nextButton.click(); // try normal click
-            } catch (ElementClickInterceptedException e) {
-                ((JavascriptExecutor) driver).executeScript("arguments[0].click();", nextButton); // fallback
-            }
+            // ✅ Always use JavaScript click to avoid intercept issues
+            ((JavascriptExecutor) driver).executeScript("arguments[0].click();", nextButton);
 
             return nextButton;
         } catch (Exception e) {
