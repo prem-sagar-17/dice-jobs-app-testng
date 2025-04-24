@@ -37,9 +37,9 @@ public class DiceJobApplicationTest {
     public void setup() {
         try {
             ChromeOptions options = new ChromeOptions();
-//            options.addArguments("--incognito");
+            options.addArguments("--incognito");
             options.addArguments("--start-maximized");
-            options.addArguments("--headed");
+            options.addArguments("--headless");
 
             driver = new ChromeDriver(options);
             wait = new WebDriverWait(driver, Duration.ofSeconds(10));
