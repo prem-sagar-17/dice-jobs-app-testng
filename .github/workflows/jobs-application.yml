@@ -26,12 +26,6 @@ jobs:
     timeout-minutes: 60
     runs-on: ubuntu-latest
 
-    strategy:
-      fail-fast: false
-      max-attempts: 2  # Retry once if the job fails
-      matrix:
-        attempt: [1]   # Dummy matrix to allow max-attempts
-
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -45,8 +39,19 @@ jobs:
       - name: Install Maven Dependencies
         run: mvn install -DskipTests
 
-      - name: Run TestNG Tests
-        run: mvn test
+      - name: Run TestNG Tests with Retry
+        run: |
+          MAX_RETRIES=2
+          COUNT=0
+          until mvn test; do
+            COUNT=$((COUNT+1))
+            if [ "$COUNT" -ge "$MAX_RETRIES" ]; then
+              echo "❌ Test failed after $MAX_RETRIES attempts"
+              exit 1
+            fi
+            echo "⚠️ Test failed... retrying ($COUNT/$MAX_RETRIES)"
+            sleep 10
+          done
         env:
           EMAIL: ${{ secrets.DICE_EMAIL }}
           PASSWORD: ${{ secrets.DICE_PASSWORD }}
