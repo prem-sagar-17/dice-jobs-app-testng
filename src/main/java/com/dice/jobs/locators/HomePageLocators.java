@@ -15,6 +15,7 @@ public class HomePageLocators {
     public By locationField =By.cssSelector("div[role='group'] input[aria-label='Location Field']");
     public By location = By.cssSelector("input[aria-label='Location Field'][placeholder='Location (ex. Denver, remote)']");
     public By unitedStatesOption = By.xpath("//div[@slot='option']//span[text()='United States']");
+    public By SearchJobs = By.xpath("//div[@aria-label='Search bar']");
     public By postedTodayRadio = By.xpath("//button[normalize-space()='Today']");
     public By filterSearchCheckbox = By.xpath("//button[@aria-label='Filter Search Results by Third Party']");
     public By jobCards = By.xpath("//div[@class='card search-card']");

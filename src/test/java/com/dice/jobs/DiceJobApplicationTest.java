@@ -4,6 +4,8 @@ import com.dice.jobs.pages.JobActions;
 import com.dice.jobs.pages.LoginActions;
 import com.dice.jobs.pages.HomeActions;
 import org.openqa.selenium.*;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
@@ -34,15 +36,12 @@ public class DiceJobApplicationTest {
     @BeforeMethod
     public void setup() {
         try {
-            // Get remote WebDriver from BrowserStack
-            driver = BrowserStackFactory.getDriver(
-                    "Windows",            // OS
-                    "11",                 // OS Version
-                    "Chrome",             // Browser
-                    "latest",             // Browser Version
-                    "Dice Job App Test"   // Test name
-            );
+            ChromeOptions options = new ChromeOptions();
+//            options.addArguments("--incognito");
+            options.addArguments("--start-maximized");
+            options.addArguments("--headed");
 
+            driver = new ChromeDriver(options);
             wait = new WebDriverWait(driver, Duration.ofSeconds(10));
 
             loginActions = new LoginActions(driver);
@@ -63,17 +62,21 @@ public class DiceJobApplicationTest {
             homeActions.searchJobs();
             int pageNumber = 1;
 
-            System.out.println("📄 Total pages found: " + homeActions.GetPageNumberCount());
+            System.out.println("📄 Total pages found: "  + homeActions.GetPageNumberCount());
             while (true) {
-                System.out.println("🔄 Processing job listings on page - " + pageNumber++);
-
-                List<WebElement> jobCards = homeActions.GetJobCards();
-
-                for (int index = 0; index < jobCards.size(); index++) {
-                    System.out.println("📌 Processing job at index " + index);
-                    jobActions.applyForJob(jobCards.get(index));
-                    jobCards = homeActions.GetJobCards(); // Re-fetch
-                }
+//                System.out.println("🔄 Processing job listings on page - " + pageNumber++);
+//
+//                List<WebElement> jobCards = homeActions.GetJobCards();
+//
+//                for (int index = 0; index < jobCards.size(); index++) {
+//                    System.out.println("📌 Processing job at index " + index);
+//
+//                    // Apply for the job
+//                    jobActions.applyForJob(jobCards.get(index));
+//
+//                    // Re-fetch the job cards after applying for one to avoid stale element issues
+//                    jobCards = homeActions.GetJobCards();
+//                }
 
                 if (homeActions.GetPageNextDisabledButtonVisibility()) {
                     System.out.println("✅ No more pages to process.");
@@ -82,6 +85,8 @@ public class DiceJobApplicationTest {
                     System.out.println("🔄 Moving to the next page...");
                     WebElement nextButton = homeActions.GetPageNextButtonLocator();
                     nextButton.click();
+
+                    // Wait for the page to load completely and ensure the next button is no longer clickable
                     wait.until(ExpectedConditions.stalenessOf(nextButton));
                 }
             }
@@ -102,3 +107,4 @@ public class DiceJobApplicationTest {
         }
     }
 }
+

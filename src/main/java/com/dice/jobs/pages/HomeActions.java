@@ -45,6 +45,16 @@ public class HomeActions {
         wait.until(ExpectedConditions.elementToBeClickable(locators.unitedStatesOption));
         driver.findElement(locators.unitedStatesOption).click();
 
+        try {
+            WebElement jobSearchBtn = wait.until(ExpectedConditions.visibilityOfElementLocated(locators.SearchJobs));
+
+            ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", jobSearchBtn);
+
+            jobSearchBtn.click();
+        } catch (TimeoutException e) {
+            System.out.println("Job Search button not visible, so not clicked.");
+        }
+
         wait.until(ExpectedConditions.elementToBeClickable(locators.postedTodayRadio));
         WebElement postedToday = driver.findElement(locators.postedTodayRadio);
         postedToday.click();
@@ -77,8 +87,7 @@ public class HomeActions {
 
     public WebElement GetPageNextButtonLocator() {
         try {
-            By nextButtonXPath = By.xpath("//li[contains(@class, 'pagination-next')]//a[normalize-space(text())='»']");
-            WebElement nextButton = wait.until(ExpectedConditions.presenceOfElementLocated(nextButtonXPath));
+            WebElement nextButton = wait.until(ExpectedConditions.presenceOfElementLocated(locators.pageNextButton));
             ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", nextButton);
             wait.until(ExpectedConditions.elementToBeClickable(nextButton));
 
@@ -94,9 +103,13 @@ public class HomeActions {
 
     public boolean GetPageNextDisabledButtonVisibility() {
         try {
-            wait.until(ExpectedConditions.visibilityOfElementLocated(locators.pageNextDisabled));
+            WebElement element = driver.findElement(locators.pageNextDisabled);
+
+            ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", element);
+
+            wait.until(ExpectedConditions.visibilityOf(element));
             return true;
-        } catch (TimeoutException e) {
+        } catch (TimeoutException | NoSuchElementException e) {
             return false;
         }
     }
