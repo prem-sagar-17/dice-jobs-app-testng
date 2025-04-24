@@ -44,35 +44,15 @@ public class HomeActions {
 
         wait.until(ExpectedConditions.elementToBeClickable(locators.unitedStatesOption));
         driver.findElement(locators.unitedStatesOption).click();
-        WebElement postedToday = null;
 
-        try {
-            new WebDriverWait(driver, Duration.ofSeconds(20))
-                    .until(ExpectedConditions.visibilityOfElementLocated(locators.postedTodayRadio));
-//            wait.until(ExpectedConditions.visibilityOfElementLocated(locators.postedTodayRadio));
-            wait.until(ExpectedConditions.elementToBeClickable(locators.postedTodayRadio));
-            postedToday = driver.findElement(locators.postedTodayRadio);
-            postedToday.click();
-        } catch (TimeoutException e) {
-            System.out.println("⚠️ 'Posted Today' not visible initially. Trying SearchJobs...");
+        wait.until(ExpectedConditions.elementToBeClickable(locators.postedTodayRadio));
+        WebElement postedToday = driver.findElement(locators.postedTodayRadio);
+        postedToday.click();
 
-            try {
-                WebElement jobSearchBtn = wait.until(ExpectedConditions.visibilityOfElementLocated(locators.SearchJobs));
-                jobSearchBtn.click();
+        wait.until(ExpectedConditions.elementToBeClickable(locators.filterSearchCheckbox));
+        driver.findElement(locators.filterSearchCheckbox).click();
 
-                wait.until(ExpectedConditions.elementToBeClickable(locators.postedTodayRadio));
-                postedToday = driver.findElement(locators.postedTodayRadio);
-                postedToday.click();
-            } catch (TimeoutException ex) {
-                System.out.println("❌ Failed to click both Posted Today and fallback SearchJobs button.");
-            }
-        }
-
-        if (postedToday != null) {
-            wait.until(ExpectedConditions.elementToBeClickable(locators.filterSearchCheckbox));
-            driver.findElement(locators.filterSearchCheckbox).click();
-            System.out.println("🔎 Job search filters applied. " + postedToday.getText() + " for " + jobRole);
-        }
+        System.out.println("🔎 Job search filters applied. " + postedToday.getText() + " for " + jobRole);
     }
 
     public int GetPageNumberCount() {
