@@ -48,8 +48,6 @@ public class HomeActions {
         try {
             WebElement jobSearchBtn = wait.until(ExpectedConditions.visibilityOfElementLocated(locators.SearchJobs));
 
-            ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", jobSearchBtn);
-
             jobSearchBtn.click();
         } catch (TimeoutException e) {
             System.out.println("Job Search button not visible, so not clicked.");
