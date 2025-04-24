@@ -62,7 +62,6 @@ public class DiceJobApplicationTest {
             homeActions.searchJobs();
             int pageNumber = 1;
 
-            System.out.println("📄 Total pages found: "  + homeActions.GetPageNumberCount());
             while (true) {
                 System.out.println("🔄 Processing job listings on page - " + pageNumber++);
 

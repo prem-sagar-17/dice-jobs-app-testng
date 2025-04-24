@@ -53,6 +53,14 @@ public class HomeActions {
         driver.findElement(locators.filterSearchCheckbox).click();
 
         System.out.println("🔎 Job search filters applied. " + postedToday.getText() + " for " + jobRole);
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            System.out.println("Sleep was interrupted: " + e.getMessage());
+        }
+
+        System.out.println("📄 Total pages found: "  + this.GetPageNumberCount());
     }
 
     public int GetPageNumberCount() {
