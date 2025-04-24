@@ -28,7 +28,9 @@ jobs:
 
     strategy:
       fail-fast: false
-      max-attempts: 2  # Retry once on failure
+      max-attempts: 2  # Retry once if the job fails
+      matrix:
+        attempt: [1]   # Dummy matrix to allow max-attempts
 
     steps:
       - name: Checkout Repository
