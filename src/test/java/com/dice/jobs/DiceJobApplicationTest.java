@@ -39,7 +39,7 @@ public class DiceJobApplicationTest {
             ChromeOptions options = new ChromeOptions();
             options.addArguments("--incognito");
             options.addArguments("--start-maximized");
-            options.addArguments("--headless");
+            options.addArguments("--headed");
 
             driver = new ChromeDriver(options);
             wait = new WebDriverWait(driver, Duration.ofSeconds(10));
@@ -64,19 +64,19 @@ public class DiceJobApplicationTest {
 
             System.out.println("📄 Total pages found: "  + homeActions.GetPageNumberCount());
             while (true) {
-//                System.out.println("🔄 Processing job listings on page - " + pageNumber++);
-//
-//                List<WebElement> jobCards = homeActions.GetJobCards();
-//
-//                for (int index = 0; index < jobCards.size(); index++) {
-//                    System.out.println("📌 Processing job at index " + index);
-//
-//                    // Apply for the job
-//                    jobActions.applyForJob(jobCards.get(index));
-//
-//                    // Re-fetch the job cards after applying for one to avoid stale element issues
-//                    jobCards = homeActions.GetJobCards();
-//                }
+                System.out.println("🔄 Processing job listings on page - " + pageNumber++);
+
+                List<WebElement> jobCards = homeActions.GetJobCards();
+
+                for (int index = 0; index < jobCards.size(); index++) {
+                    System.out.println("📌 Processing job at index " + index);
+
+                    // Apply for the job
+                    jobActions.applyForJob(jobCards.get(index));
+
+                    // Re-fetch the job cards after applying for one to avoid stale element issues
+                    jobCards = homeActions.GetJobCards();
+                }
 
                 if (homeActions.GetPageNextDisabledButtonVisibility()) {
                     System.out.println("✅ No more pages to process.");
